@@ -26,5 +26,8 @@ CREATE employee (
     manager_id INT,
     FOREIGN KEY(role_id)
     REFERENCES role(id)
+    ON DELETE SET NULL,
+    FOREIGN KEY(id)
+    REFERENCES employee(id)
     ON DELETE SET NULL
 )
