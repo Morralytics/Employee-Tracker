@@ -1,21 +1,10 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
-// const mysqlConnection = require('./config/connection');
-
-const sql = require('mysql2');
+const mysqlConnection = require('./config/connection');
 require('dotenv').config();
 
-const connection = sql.createConnection(
-    {
-        database: process.env.DB_NAME,
-        user: process.env.DB_USER,
-        password: process.env.DB_PW,
-        host: "localhost",
-        port: 3306
-    }
-);
 
-connection.connect((err) => {
+mysqlConnection.connect((err) => {
     if (err) throw err;
     questions();
 });
@@ -45,7 +34,7 @@ const questions = async () => {
                 viewAllDepartments();
                 break;
             case 'Quit':
-                connection.end();
+                mysqlConnection.end();
                 break;
         }
 
