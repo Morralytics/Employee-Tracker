@@ -22,6 +22,9 @@ const questions = async () => {
         ])
 
         switch (answers) {
+            case 'View all departments':
+                viewAllDepartments();
+                break;
             case 'Quit':
                 exit();
                 break;
@@ -29,6 +32,11 @@ const questions = async () => {
             default:
                 break;
         }
+
+    // Department
+    viewAllDepartments = () => {
+        
+    }
 }
 
 questions();
