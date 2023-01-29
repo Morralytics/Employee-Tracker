@@ -37,6 +37,8 @@ const questions = async () => {
             case 'View all departments':
                 viewAllDepartments();
                 break;
+            case 'View all roles':
+                viewAllRoles();
             case 'Quit':
                 mysqlConnection.end();
                 break;
@@ -57,6 +59,17 @@ const questions = async () => {
     // View all employees
     const viewAllEmployees = () => {
         let sqlQuery = `SELECT * FROM employee`;
+
+        mysqlConnection.query(sqlQuery, (err, res) => {
+            if (err) throw err;
+            console.table(res);
+            questions();
+        })
+    }
+
+    // View all roles
+    const viewAllRoles = () => {
+        let sqlQuery = `SELECT * FROM roles`;
 
         mysqlConnection.query(sqlQuery, (err, res) => {
             if (err) throw err;
