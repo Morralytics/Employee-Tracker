@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const connection = require('./config/connection');
-// const fs = require('fs');
 const mysqlConnection = require('./config/connection');
+require('console.table');
 require('dotenv').config();
 
 
@@ -31,6 +31,9 @@ const questions = async () => {
         ])
 
         switch (answers.userChoice) {
+            case 'View all employees':
+                viewAllEmployees();
+                break;
             case 'View all departments':
                 viewAllDepartments();
                 break;
@@ -40,13 +43,24 @@ const questions = async () => {
         }
     }
     
-    // Department
+    // View all department
     const viewAllDepartments = () => {
         let sqlQuery = `SELECT * FROM department`;
 
-        mysqlConnection.query(sqlQuery, (err, res, fields) => {
+        mysqlConnection.query(sqlQuery, (err, res) => {
             if (err) throw err;
-            console.log(res);
+            console.table(res);
             questions();
         });
+    }
+
+    // View all employees
+    const viewAllEmployees = () => {
+        let sqlQuery = `SELECT * FROM employee`;
+
+        mysqlConnection.query(sqlQuery, (err, res) => {
+            if (err) throw err;
+            console.table(res);
+            questions();
+        })
     }
