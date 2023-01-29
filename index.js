@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
-const fs = require('fs');
+const connection = require('./config/connection');
+// const fs = require('fs');
 const mysqlConnection = require('./config/connection');
 require('dotenv').config();
 
@@ -37,9 +38,15 @@ const questions = async () => {
                 mysqlConnection.end();
                 break;
         }
-
-    // Department
-    viewAllDepartments = () => {
-
     }
-}
+    
+    // Department
+    const viewAllDepartments = () => {
+        let sqlQuery = `SELECT * FROM department`;
+
+        mysqlConnection.query(sqlQuery, (err, res, fields) => {
+            if (err) throw err;
+            console.log(res);
+            questions();
+        });
+    }
