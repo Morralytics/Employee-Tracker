@@ -1,7 +1,24 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
+// const mysqlConnection = require('./config/connection');
 
+const sql = require('mysql2');
+require('dotenv').config();
 
+const connection = sql.createConnection(
+    {
+        database: process.env.DB_NAME,
+        user: process.env.DB_USER,
+        password: process.env.DB_PW,
+        host: "localhost",
+        port: 3306
+    }
+);
+
+connection.connect((err) => {
+    if (err) throw err;
+    questions();
+});
 
 const questions = async () => {
     const answers = await inquirer
@@ -23,15 +40,12 @@ const questions = async () => {
             }
         ])
 
-        switch (answers) {
+        switch (answers.userChoice) {
             case 'View all departments':
                 viewAllDepartments();
                 break;
             case 'Quit':
-                exit();
-                break;
-        
-            default:
+                connection.end();
                 break;
         }
 
@@ -40,5 +54,3 @@ const questions = async () => {
 
     }
 }
-
-questions();
