@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const connection = require('./config/connection');
 const mysqlConnection = require('./config/connection');
+require('mysql2/promise');
 require('console.table');
 require('dotenv').config();
 
@@ -30,77 +31,86 @@ const questions = async () => {
             }
         ])
 
-        switch (answers.userChoice) {
-            case 'View all employees':
-                viewAllEmployees();
-                break;
-            case 'Add employee':
-                addEmployee();
-                break;
-            case 'View all departments':
-                viewAllDepartments();
-                break;
-            case 'View all roles':
-                viewAllRoles();
-            case 'Quit':
-                mysqlConnection.end();
-                break;
-        }
+    switch (answers.userChoice) {
+        case 'View all employees':
+            viewAllEmployees();
+            break;
+        case 'Add employee':
+            await addEmployee();
+            break;
+        case 'View all departments':
+            viewAllDepartments();
+            break;
+        case 'View all roles':
+            viewAllRoles();
+        case 'Quit':
+            mysqlConnection.end();
+            break;
     }
-    
-    // View all department
-    const viewAllDepartments = () => {
-        let sqlQuery = `SELECT * FROM department`;
+}
 
-        mysqlConnection.query(sqlQuery, (err, res) => {
-            if (err) throw err;
-            console.table(res);
-            questions();
-        });
-    }
+// View all department
+const viewAllDepartments = () => {
+    let sqlQuery = `SELECT * FROM department`;
 
-    // View all employees
-    const viewAllEmployees = () => {
-        let sqlQuery = `SELECT * FROM employee`;
+    mysqlConnection.query(sqlQuery, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        questions();
+    });
+}
 
-        mysqlConnection.query(sqlQuery, (err, res) => {
-            if (err) throw err;
-            console.table(res);
-            questions();
-        })
-    }
+// View all employees
+const viewAllEmployees = () => {
+    let sqlQuery = `SELECT * FROM employee`;
 
-    // View all roles
-    const viewAllRoles = () => {
-        let sqlQuery = `SELECT * FROM roles`;
+    mysqlConnection.query(sqlQuery, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        questions();
+    })
+}
 
-        mysqlConnection.query(sqlQuery, (err, res) => {
-            if (err) throw err;
-            console.table(res);
-            questions();
-        })
-    }
+// View all roles
+const viewAllRoles = () => {
+    let sqlQuery = `SELECT * FROM roles`;
 
-    // Add employee
-    const addEmployee = async () => {
-        const roleChoices = `SELECT id AS VALUE FROM roles`
-        const employee = await inquirer
-            .prompt([
-                {
-                    type: 'input',
-                    message: 'What is the first name of the employee?',
-                    name: 'first_name'
-                },
-                {
-                    type: 'input',
-                    message: 'What is the last name of the employee?',
-                    name: 'last_name'
-                },
-                {
-                    type: 'list',
-                    message: 'Which role does this employee fill?',
-                    name: 'role',
-                    choices: []
-                }
-            ])
-    }
+    mysqlConnection.query(sqlQuery, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        questions();
+    })
+}
+
+// Add employee
+const addEmployee = async () => {
+    const gatherQuery = `SELECT roles.title FROM roles`
+
+    mysqlConnection.query(gatherQuery, (err, res) => {
+        if (err) throw err;
+
+        const roles = res.map(({ title }) => (
+            `${title}`
+        ));
+        console.log(roles);
+
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'first_name',
+                message: 'What is the first name of the employee?'
+            },
+            {
+                type: 'input',
+                name: 'last_name',
+                message: 'What is the last name of the employee?'
+            },
+            {
+                type: 'list',
+                name: 'role',
+                message: 'Which role does this employee fill?',
+                choices: roles
+            }
+        ])
+    })
+}
