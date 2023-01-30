@@ -84,16 +84,19 @@ const viewAllRoles = () => {
 
 // Add employee
 const addEmployee = async () => {
-    const gatherQuery = `SELECT roles.title FROM roles`
+    const gatherQuery = `SELECT roles.id, roles.title, roles.salary FROM roles`
 
     mysqlConnection.query(gatherQuery, (err, res) => {
         if (err) throw err;
 
-        const roles = res.map(({ title }) => (
-            `${title}`
-        ));
-        console.log(roles);
+        const roles = res.map(({ id, title, salary }) => ({
+            value: id,
+            title: `${title}`,
+            salary: `${salary}`
 
+        }
+        ));
+        console.table(roles),
         inquirer.prompt([
             {
                 type: 'input',
@@ -112,5 +115,13 @@ const addEmployee = async () => {
                 choices: roles
             }
         ])
+            .then((res) => {
+                const addQuery = `INSERT INTO employee SET ?`
+                mysqlConnection.query(addQuery, { first_name: res.first_name, last_name: res.last_name, role_id: res.role }, (err, res) => {
+                    if (err) throw err;
+                    console.log('Added to employee table')
+                    questions();
+                })
+            })
     })
 }
