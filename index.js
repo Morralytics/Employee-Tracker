@@ -34,6 +34,9 @@ const questions = async () => {
             case 'View all employees':
                 viewAllEmployees();
                 break;
+            case 'Add employee':
+                addEmployee();
+                break;
             case 'View all departments':
                 viewAllDepartments();
                 break;
@@ -76,4 +79,28 @@ const questions = async () => {
             console.table(res);
             questions();
         })
+    }
+
+    // Add employee
+    const addEmployee = async () => {
+        const roleChoices = `SELECT id AS VALUE FROM roles`
+        const employee = await inquirer
+            .prompt([
+                {
+                    type: 'input',
+                    message: 'What is the first name of the employee?',
+                    name: 'first_name'
+                },
+                {
+                    type: 'input',
+                    message: 'What is the last name of the employee?',
+                    name: 'last_name'
+                },
+                {
+                    type: 'list',
+                    message: 'Which role does this employee fill?',
+                    name: 'role',
+                    choices: []
+                }
+            ])
     }
