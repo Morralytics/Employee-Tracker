@@ -24,6 +24,7 @@ const questions = async () => {
                     'Update employee role',
                     'View all roles',
                     'Add role',
+                    'Update a role',
                     'View all departments',
                     'Add department',
                     'Quit'
@@ -36,13 +37,17 @@ const questions = async () => {
             viewAllEmployees();
             break;
         case 'Add employee':
-            await addEmployee();
+            addEmployee();
             break;
         case 'View all departments':
             viewAllDepartments();
             break;
         case 'View all roles':
             viewAllRoles();
+        case 'Update a role':
+            updateRole();
+        case 'Add department':
+            addDepartment();
         case 'Quit':
             mysqlConnection.end();
             break;
@@ -71,6 +76,13 @@ const viewAllEmployees = () => {
     })
 }
 
+const getEmployee = async () => {
+    let sqlQuery = `SELECT * FROM employee`;
+
+    const employeeRows = await mysqlConnection.promise().query(sqlQuery);
+    return employeeRows[0];
+}
+
 // View all roles
 const viewAllRoles = () => {
     let sqlQuery = `SELECT * FROM roles`;
@@ -84,20 +96,17 @@ const viewAllRoles = () => {
 
 // Add employee
 const addEmployee = async () => {
-    const gatherQuery = `SELECT roles.id, roles.title, roles.salary FROM roles`
+    const gatherQuery = `SELECT roles.id, roles.title FROM roles`
 
-    mysqlConnection.query(gatherQuery, (err, res) => {
-        if (err) throw err;
+    const res = await mysqlConnection.promise().query(gatherQuery);
 
-        const roles = res.map(({ id, title, salary }) => ({
-            value: id,
-            title: `${title}`,
-            salary: `${salary}`
-
-        }
-        ));
-        console.table(roles),
-        inquirer.prompt([
+    const roles = res[0].map(({ id, title }) => ({
+        value: id,
+        name: title,
+    }
+    ));
+    const { first_name, last_name, role_id } = await inquirer
+        .prompt([
             {
                 type: 'input',
                 name: 'first_name',
@@ -110,18 +119,25 @@ const addEmployee = async () => {
             },
             {
                 type: 'list',
-                name: 'role',
+                name: 'role_id',
                 message: 'Which role does this employee fill?',
                 choices: roles
             }
         ])
-            .then((res) => {
-                const addQuery = `INSERT INTO employee SET ?`
-                mysqlConnection.query(addQuery, { first_name: res.first_name, last_name: res.last_name, role_id: res.role }, (err, res) => {
-                    if (err) throw err;
-                    console.log('Added to employee table')
-                    questions();
-                })
+        
+            const addQuery = `INSERT INTO employee SET ?`
+            mysqlConnection.query(addQuery, { first_name, last_name, role_id }, (err, res) => {
+                if (err) throw err;
+                console.log('Added to employee table')
+                questions();
             })
-    })
+}
+
+const addDepartment = async () => {
+
+}
+
+const updateRole = async () => {
+    const employees = await getEmployee();
+    console.log(employees);
 }
