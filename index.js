@@ -44,6 +44,7 @@ const questions = async () => {
             break;
         case 'View all roles':
             viewAllRoles();
+            break;
         case 'Update a role':
             updateRole();
         case 'Add department':
